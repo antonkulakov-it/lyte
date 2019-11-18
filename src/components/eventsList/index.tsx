@@ -1,9 +1,9 @@
 import { observer, inject } from "mobx-react";
-import { Link, match, NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import React from "react";
 import { EventsListStore } from "../../stores/eventsListStore";
 import { PER_PAGE } from "../../services/dataProcessor/config";
-import { Table, Pagination } from "react-bootstrap";
+import { Table, Pagination, Container, PageItem } from "react-bootstrap";
 
 const END_POINT = "/events/";
 
@@ -28,20 +28,19 @@ class EventsList extends React.Component {
 	}
 	render() {
 		const events = this.eventsListStore.getEvents();
-		
 		let pages: any[] = [];
 		const eventsHtml = events.map((event) => {
 			return(
-				<tr key={event.id}>
-					<td>{event.id}</td>
+				<tr key={ event.id }>
+					<td>{ event.id }</td>
 					<td>
 						<Link to={`/event/${event.id}`}>{event.name}</Link>
 					</td>
 					<td>{event.start_time}</td>
 					<td>
-						{parseFloat(event.min_ticket_price).toFixed(2)}&ndash;
-						{parseFloat(event.max_ticket_price).toFixed(2)}
-						{event.ticket_price_currency}
+						{ parseFloat(event.min_ticket_price).toFixed(2) }&ndash;
+						{ parseFloat(event.max_ticket_price).toFixed(2) }
+						{ event.ticket_price_currency }
 					</td>
 				</tr>
 			);
@@ -51,13 +50,15 @@ class EventsList extends React.Component {
 		const total = Math.ceil(this.eventsListStore.getCount() as number / PER_PAGE);
 		for (let i = 1; i <= total; i++) {
 			pages.push(
+				// maybe bug, but don't work below cases:
+				// <PageItem key={i} as={NavLink} to={`${END_POINT}${i}`} activeClassName="active">{i}</PageItem>
 				<li className="page-item" key={i} >
 					<NavLink to={`${END_POINT}${i}`} className="page-link" activeClassName="active">{i}</NavLink>
-    			</li>
+				</li>
 			);
 		}
 		return (
-			<div>
+			<Container>
 				<Table striped bordered hover size="sm">
 					<thead>
 						<tr>
@@ -71,11 +72,11 @@ class EventsList extends React.Component {
 						{ eventsHtml }
 					</tbody>
 				</Table>
-				<Pagination>{pages}</Pagination>
-			</div>
+				<Pagination>{ pages }</Pagination>
+			</Container>
 		);
 	}
 }
-
+// we have ordinary class and then add to him mobx functionality
 export default inject("eventsListStore")(observer(EventsList));
 

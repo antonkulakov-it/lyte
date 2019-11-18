@@ -1,13 +1,14 @@
 import * as React from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
 import EventsList from "../eventsList";
+import { SingleEventDetails } from "../singleEventDetails";
 import { Signup } from "../signUp";
-import { SignIn } from "../signIn";
+import SignIn from "../signIn";
 
 export const AppRouter = (): JSX.Element => {
 	return (
 		<Switch>
-			{/* <Route path="/event/:id" component={SingleEventDetails} /> */}
+			<Route path="/event/:id" component={SingleEventDetails} />
 			<Route
 				exact
 				path="/events"
@@ -21,6 +22,7 @@ export const AppRouter = (): JSX.Element => {
 			<Route exact path="/events/:page" component={EventsList} />
 			{/* <Route path="/eventEdit/:id" component={EventEdit} /> */}
 			<Route exact path="/" render={() => <Redirect to="/events/1" />} />
+			<Route exact path="/signin" component={SignIn} />
 			<Route exact path="/signup" component={Signup} />
 
 			<Route

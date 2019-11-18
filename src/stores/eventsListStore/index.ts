@@ -67,6 +67,7 @@ decorate(EventsListStore, {
 	events: observable,
 	setCurrentPage: action,
 	totalPages: computed,
+	fetch: action
 });
 
 export { EventsListStore };

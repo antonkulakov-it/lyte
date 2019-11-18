@@ -12,8 +12,8 @@ export const Navigation = () => {
 					</Nav.Link>
 				</Nav.Item>
 				<Nav.Item>
-					<Nav.Link as={NavLink} to="/signup" activeClassName="active">
-						Sign Up
+					<Nav.Link as={NavLink} to="/signin" activeClassName="active">
+						Sign in
 					</Nav.Link>
 				</Nav.Item>
 			</Nav>
