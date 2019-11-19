@@ -1,6 +1,6 @@
 import * as React from "react";
 import { observer, inject } from "mobx-react";
-import { Jumbotron, Container, Tab, Row, Col, Nav, Badge, Button } from "react-bootstrap";
+import { Jumbotron, Tab, Row, Col, Nav, Badge, Button } from "react-bootstrap";
 
 const Logo = (props: {children?: any; src: string; alt: string; className: string }) => {
 	const { children, src = "", alt = "", className = "" } = props;
@@ -26,7 +26,7 @@ const Organizer = (props: { logo_uri: string; name: string; alt: string }) => {
 	);
   };
 
-export const SingleEventDetails = inject("singleEventStore")(
+const SingleEventDetails = inject("singleEventStore")(
 	observer(({ singleEventStore, match, history }) => {
 		singleEventStore.setCurrentEventId(match.params.id);
 		const details = singleEventStore.getDetails();
@@ -44,8 +44,8 @@ export const SingleEventDetails = inject("singleEventStore")(
 			finish_time,
 			organizer
 		} = details;
-		return (
-			<Container>
+		return(
+			<>
 				{history.length > 1 ? (
 				<Button variant="outline-secondary" onClick={() => history.goBack()}>back</Button>
 				) : (
@@ -85,8 +85,9 @@ export const SingleEventDetails = inject("singleEventStore")(
 					</Col>
 				</Row>
 				</Tab.Container>
-			</Container>
-
+			</>
 		);
 	})
 );
+
+export default SingleEventDetails;

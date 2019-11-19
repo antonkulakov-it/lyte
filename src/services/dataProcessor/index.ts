@@ -1,14 +1,15 @@
 import { API_URL, PER_PAGE } from "./config";
-import { TMethods, TEndPoints, TRequestParams, TKeyValue } from "../../types";
+import { TMethods, TRequestParams, TKeyValue } from "../../types";
 import { LoadingStore } from "../../stores/loadingStore";
+import { END_POINTS } from "../../apiEndPoints";
 export class DataProcessor {
 	private _loadingStore: LoadingStore;
-	private _errorCallback = (e: any) => {};
+	private _errorCallback: (e: any) => void;
 	private doFetch = async (
 		endpointUrl: string,
 		method: TMethods = "GET",
 		body?: string
-	) => {
+	): Promise<any> => {
 		const requestParam: RequestInit = {
 			method,
 			headers: {
@@ -24,37 +25,43 @@ export class DataProcessor {
 					`${API_URL}${endpointUrl}`,
 					requestParam
 				);
+				if (!fetchResult.ok) {
+					throw new Error(fetchResult.statusText);
+				}
 				const result = await fetchResult.json();
 				return resolve(result);
 			} catch (e) {
 				reject(e);
 			}
 		})
-		.then(result => {
-			return result;
-		})
 		.catch(error => this._errorCallback(error));
 		this._loadingStore.addPromise(promise);
-		// this._loadingStore.setLoading(promise);
 		const result = await promise.then(result => result);
-		// this._loadingStore.unsetLoading();
 		return result;
 	};
 
 	private doGet = async (
-		endpoint: TEndPoints,
+		endpoint: string,
 		params: TRequestParams = [],
 		inlineParams: string = ""
-	) => {
+	): Promise<any> => {
 		const paramString = params.reduce((result: string, current: TKeyValue) => {
-			return (
+			return(
 				result + `${result === "" ? "?" : "&"}${current.key}=${current.value}`
 			);
 		}, "");
 		return await this.doFetch(`${endpoint}${inlineParams}` + paramString);
 	};
-	constructor(loadingStore:any) {
+
+	private doPost = async (
+		endpoint: string,
+		params: any
+	): Promise<any> => {
+		return await this.doFetch(endpoint, "POST", JSON.stringify(params));
+	}
+	constructor(loadingStore: LoadingStore, errorCallback = (e: any) => {console.log(e)}) {
 		this._loadingStore = loadingStore;
+		this._errorCallback = errorCallback;
 	}
 
 	getCategories = async () => {};
@@ -73,18 +80,19 @@ export class DataProcessor {
 	getOrganizers = async () => {};
 	updateEvent = async () => {};
 	createUser = async () => {};
-	getUserToken = async () => {
-		const response = await fetch(`${API_URL}/users/token/`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json;charset=utf-8"
-			},
-			body: JSON.stringify({
-				username: "use1r@example.com",
-				password: "string11"
-			})
+	getUserToken = async (email: string, password: string): Promise<any> => {
+		const result = await this.doPost("/users/token/", {
+			username: email,
+			password: password
 		});
-		const result = await response.json();
+		return result;
+	};
+
+	registerUser = async (email: string, password: string): Promise<any> => {
+		const result = await this.doPost("/users/register/", {
+			username: email,
+			password: password
+		});
 		return result;
 	};
 }

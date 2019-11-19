@@ -1,17 +1,29 @@
-import { string } from "prop-types";
-
 export type TProvider = 1;
 
-type TSignInField = {
+export type TAlertMessage = {
+	id: string,
+	type: string,
+	title: string,
+	message: string
+}
+
+export type TAlertMessages = {
+	[key: string]: TAlertMessage
+}
+
+export type TAlertsVariants = {
+	[key: string]: "primary" | "secondary" | "success" | "danger" | "warning" | "info" | "dark" | "light" | undefined
+}
+
+type TLoginField = {
 	value: string,
 	error: false | null | string,
 	rule: string
 }
 
-export type TSignInFields = {
+export type TLoginFields = {
 	fields: {
-		email: TSignInField,
-		password: TSignInField
+		[key: string]: TLoginField
 	};
 	meta: {
 		isValid: boolean,
@@ -72,12 +84,6 @@ export type TKeyValue = {
 export type TRequestParams = TKeyValue[];
 
 export type TMethods = "GET" | "POST" | "PUT" | "PATCH";
-
-export type TEndPoints =
-	| "/categories/"
-	| "/events/"
-	| "/organizers/"
-	| "/users/";
 
 export type TPagerProps = {
 	endPoint: string;

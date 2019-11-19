@@ -1,30 +1,28 @@
 import * as React from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
 import EventsList from "../eventsList";
-import { SingleEventDetails } from "../singleEventDetails";
-import { Signup } from "../signUp";
-import SignIn from "../signIn";
-
-export const AppRouter = (): JSX.Element => {
-	return (
+import SingleEventDetails from "../singleEventDetails";
+import Login from "../login";
+import { END_POINTS } from "../../endPoints";
+export const AppRouter = () => {
+	return(
 		<Switch>
-			<Route path="/event/:id" component={SingleEventDetails} />
+			<Route path={`${END_POINTS.EVENT_DETAILS}:id`} component={SingleEventDetails} />
 			<Route
 				exact
-				path="/events"
-				render={() => <Redirect to="/events/1" />}
+				path={END_POINTS.EVENTS_NOSLASH}
+				render={() => <Redirect to={`${END_POINTS.EVENTS}1`} />}
 			/>
 			<Route
 				exact
-				path="/events/"
-				render={() => <Redirect to="/events/1" />}
+				path={END_POINTS.EVENTS}
+				render={() => <Redirect to={`${END_POINTS.EVENTS}1`} />}
 			/>
-			<Route exact path="/events/:page" component={EventsList} />
+			<Route exact path={`${END_POINTS.EVENTS}:page`} component={EventsList} />
 			{/* <Route path="/eventEdit/:id" component={EventEdit} /> */}
-			<Route exact path="/" render={() => <Redirect to="/events/1" />} />
-			<Route exact path="/signin" component={SignIn} />
-			<Route exact path="/signup" component={Signup} />
-
+			<Route exact path="/" render={() => <Redirect to={`${END_POINTS.EVENTS}1`} />} />
+			<Route exact path={END_POINTS.LOGIN} whenLoggedIn={<Redirect to={`${END_POINTS.EVENTS}1`} />} component={Login} />
+			<Route exact path={END_POINTS.LOGOUT} render={() => <Redirect to={`${END_POINTS.EVENTS}1`} />} />
 			<Route
 				path="*"
 				atch

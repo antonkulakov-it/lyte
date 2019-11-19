@@ -3,9 +3,9 @@ import { Link, NavLink } from "react-router-dom";
 import React from "react";
 import { EventsListStore } from "../../stores/eventsListStore";
 import { PER_PAGE } from "../../services/dataProcessor/config";
-import { Table, Pagination, Container, PageItem } from "react-bootstrap";
+import { Table, Pagination /*, PageItem */ } from "react-bootstrap";
+import { END_POINTS } from "../../endPoints";
 
-const END_POINT = "/events/";
 
 class EventsList extends React.Component {
 	eventsListStore: EventsListStore;
@@ -13,16 +13,18 @@ class EventsList extends React.Component {
 		super(props);
 		this.eventsListStore = props.eventsListStore;
 		props.history.listen((location:any) => {
-			if (location.pathname.indexOf(END_POINT) < 0) {return;}
+			if (location.pathname.indexOf(END_POINTS.EVENTS) < 0) {
+				return;
+			}
 			this.eventsListStore.resolveCollision(
-				Number(location.pathname.split(END_POINT)[1] || 1),
-				END_POINT,
+				Number(location.pathname.split(END_POINTS.EVENTS)[1] || 1),
+				END_POINTS.EVENTS,
 				props.history.replace
 			)
 		});
 		this.eventsListStore.resolveCollision(
 			Number(props.match.params.page),
-			END_POINT,
+			END_POINTS.EVENTS,
 			props.history.replace
 		);
 	}
@@ -34,7 +36,7 @@ class EventsList extends React.Component {
 				<tr key={ event.id }>
 					<td>{ event.id }</td>
 					<td>
-						<Link to={`/event/${event.id}`}>{event.name}</Link>
+						<Link to={`${END_POINTS.EVENT_DETAILS}${event.id}`}>{event.name}</Link>
 					</td>
 					<td>{event.start_time}</td>
 					<td>
@@ -51,29 +53,29 @@ class EventsList extends React.Component {
 		for (let i = 1; i <= total; i++) {
 			pages.push(
 				// maybe bug, but don't work below cases:
-				// <PageItem key={i} as={NavLink} to={`${END_POINT}${i}`} activeClassName="active">{i}</PageItem>
+				// <PageItem key={i} as={NavLink} to={`${END_POINTS.EVENTS}${i}`} activeClassName="active">{i}</PageItem>
 				<li className="page-item" key={i} >
-					<NavLink to={`${END_POINT}${i}`} className="page-link" activeClassName="active">{i}</NavLink>
+					<NavLink to={`${END_POINTS.EVENTS}${i}`} className="page-link" activeClassName="active">{i}</NavLink>
 				</li>
 			);
 		}
-		return (
-			<Container>
-				<Table striped bordered hover size="sm">
-					<thead>
-						<tr>
-							<th>id</th>
-							<th>name</th>
-							<th>start</th>
-							<th>price</th>
-						</tr>
-					</thead>
-					<tbody>
-						{ eventsHtml }
-					</tbody>
-				</Table>
-				<Pagination>{ pages }</Pagination>
-			</Container>
+		return(
+			<>
+			<Table striped bordered hover size="sm">
+				<thead>
+					<tr>
+						<th>id</th>
+						<th>name</th>
+						<th>start</th>
+						<th>price</th>
+					</tr>
+				</thead>
+				<tbody>
+					{ eventsHtml }
+				</tbody>
+			</Table>
+			<Pagination>{ pages }</Pagination>
+			</>
 		);
 	}
 }
