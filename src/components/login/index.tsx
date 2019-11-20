@@ -17,7 +17,7 @@ const FormInput = (props: any) => {
 	);
 }
 
-const Login = inject("loginStore")(observer(({ loginStore, whenLoggedIn, history }) => {
+const Login = inject("loginStore")(observer(({ loginStore, history }) => {
 	return(
 		<Row>
 			<Col md={{ span: 6, offset: 3 }}>

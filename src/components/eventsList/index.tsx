@@ -3,15 +3,19 @@ import { Link, NavLink } from "react-router-dom";
 import React from "react";
 import { EventsListStore } from "../../stores/eventsListStore";
 import { PER_PAGE } from "../../services/dataProcessor/config";
-import { Table, Pagination /*, PageItem */ } from "react-bootstrap";
+import { Table, Pagination, /*, PageItem */ 
+Button} from "react-bootstrap";
 import { END_POINTS } from "../../endPoints";
+import { LoginStore } from "../../stores/loginStore";
 
 
 class EventsList extends React.Component {
 	eventsListStore: EventsListStore;
+	loginStore: LoginStore;
 	constructor(props: any) {
 		super(props);
 		this.eventsListStore = props.eventsListStore;
+		this.loginStore = props.loginStore;
 		props.history.listen((location:any) => {
 			if (location.pathname.indexOf(END_POINTS.EVENTS) < 0) {
 				return;
@@ -31,14 +35,25 @@ class EventsList extends React.Component {
 	render() {
 		const events = this.eventsListStore.getEvents();
 		let pages: any[] = [];
+		const showEditButton = !!this.loginStore.getToken();
+		const editEventHead = showEditButton ? <th></th> : "";
 		const eventsHtml = events.map((event) => {
+			const editEventBody = showEditButton ? <td><Button variant="outline-primary">
+				<Link to={`${END_POINTS.EVENT_EDIT}${event.id}`}>
+					<svg id="i-edit" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+						<path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z" />
+					</svg>
+				</Link>
+				</Button></td>: "";
 			return(
 				<tr key={ event.id }>
 					<td>{ event.id }</td>
 					<td>
 						<Link to={`${END_POINTS.EVENT_DETAILS}${event.id}`}>{event.name}</Link>
 					</td>
-					<td>{event.start_time}</td>
+					{ editEventBody }
+					<td>{ event.organizer.name }</td>
+					<td>{ event.start_time }</td>
 					<td>
 						{ parseFloat(event.min_ticket_price).toFixed(2) }&ndash;
 						{ parseFloat(event.max_ticket_price).toFixed(2) }
@@ -66,6 +81,8 @@ class EventsList extends React.Component {
 					<tr>
 						<th>id</th>
 						<th>name</th>
+						{ editEventHead }
+						<th>organizer</th>
 						<th>start</th>
 						<th>price</th>
 					</tr>
@@ -80,5 +97,5 @@ class EventsList extends React.Component {
 	}
 }
 // we have ordinary class and then add to him mobx functionality
-export default inject("eventsListStore")(observer(EventsList));
+export default inject("eventsListStore", "loginStore")(observer(EventsList));
 

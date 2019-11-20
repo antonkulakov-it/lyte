@@ -2,6 +2,11 @@ import { API_URL, PER_PAGE } from "./config";
 import { TMethods, TRequestParams, TKeyValue } from "../../types";
 import { LoadingStore } from "../../stores/loadingStore";
 import { END_POINTS } from "../../apiEndPoints";
+
+const PERSIST_STORAGE_PREFIX = "my-app-";
+const PS_KEY = PERSIST_STORAGE_PREFIX + "token";
+const STORAGE = sessionStorage;
+
 export class DataProcessor {
 	private _loadingStore: LoadingStore;
 	private _errorCallback: (e: any) => void;
@@ -64,7 +69,21 @@ export class DataProcessor {
 		this._errorCallback = errorCallback;
 	}
 
-	getCategories = async () => {};
+	getCategories = async (page: number) => {
+		const offset = page <= 1 ? 0 : (page - 1) * 10;
+		const result = await this.doGet("/categories/", [
+			{ key: "limit", value: page > 0 ? PER_PAGE : -1 },
+			{ key: "offset", value: offset }
+		]);
+		return result;
+	};
+	getOrganizers = async (page: number) => {
+		const offset = page <= 1 ? 0 : (page - 1) * 10;
+		const result = await this.doGet("/organizers/", [
+			{ key: "limit", value: page > 0 ? PER_PAGE : -1 },
+			{ key: "offset", value: offset }
+		]);
+	};
 
 	getEvents = async (page: number = 0): Promise<any> => {
 		const offset = page <= 1 ? 0 : (page - 1) * 10;
@@ -77,9 +96,21 @@ export class DataProcessor {
 	getEvent = async (id: string) => {
 		return await this.doGet("/events/", [], id + "/");
 	};
-	getOrganizers = async () => {};
+
 	updateEvent = async () => {};
-	createUser = async () => {};
+
+	getPersistedUserToken = (): string | null => {
+		return STORAGE.getItem(PS_KEY);
+	}
+
+	setPersistedUserToken = (token: string) => {
+		STORAGE.setItem(PS_KEY, token);
+	}
+
+	dropToken = () => {
+		STORAGE.removeItem(PS_KEY);
+	}
+
 	getUserToken = async (email: string, password: string): Promise<any> => {
 		const result = await this.doPost("/users/token/", {
 			username: email,

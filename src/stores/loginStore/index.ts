@@ -49,7 +49,7 @@ class LoginStore {
 		if (this.form.meta.isValid) {
 			const result = await this._dataProcessor.getUserToken(this.getEmail(), this.getPassword());
 			if (result) {
-				this.token = result.token;
+				this.setToken(result.token);
 				afterTokenSetted();
 			}
 		}
@@ -68,12 +68,22 @@ class LoginStore {
 
 	constructor(dataProcessor: DataProcessor) {
 		this._dataProcessor = dataProcessor;
+		const token = this._dataProcessor.getPersistedUserToken();
+		if (token) {
+			this.token = token;
+		}
 	}
 
 	getToken = () => this.token;
 
+	setToken = (token: string) => {
+		this.token = token;
+		this._dataProcessor.setPersistedUserToken(token);
+	}
+
 	dropToken = () => {
 		this.token = "";
+		this._dataProcessor.dropToken();
 	}
 }
 
@@ -81,7 +91,8 @@ decorate(LoginStore, {
 	onFieldChange: action,
 	form: observable,
 	token: observable,
-	login: action
+	login: action,
+	setToken: action
 })
 
 export { LoginStore };

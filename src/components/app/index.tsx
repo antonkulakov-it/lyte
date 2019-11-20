@@ -13,12 +13,12 @@ import { Container } from "react-bootstrap";
 
 const alertsStore = new AlertsStore();
 const loadingStore = new LoadingStore();
-const dataProcessor = new DataProcessor(loadingStore, (message: string) => {
+const dataProcessor = new DataProcessor(loadingStore, (message: any) => {
 	alertsStore.addMessage({
 		id: Date.now().toString(),
 		type: "error",
 		title: "Error",
-		message
+		message: message.toString()
 	});
 });
 

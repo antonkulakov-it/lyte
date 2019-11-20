@@ -11,10 +11,10 @@ const getAlertsHtml = (alerts: TAlertMessages) => {
 		const variant = cases[alerts[id].type];
 		return(
 			<Alert key={id} variant={variant}>
-    			{alerts[id].message}
+    			{alerts[id].message.toString()}
   			</Alert>
 		);
-	})
+	});
 }
 
 export const Alerts = inject("alertsStore")(observer(({ alertsStore }) => {
