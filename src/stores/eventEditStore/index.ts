@@ -1,14 +1,26 @@
 import { observable, action, decorate } from "mobx";
 import Validator from "validatorjs";
 import { DataProcessor } from "../../services/dataProcessor";
-import { TEventData, TFormFields } from "../../types";
+import { TFormFields } from "../../types";
 
 class EventEditStore {
     private _dataProcessor: DataProcessor;
-    eventId: string = "";
+	eventId: string = "";
+	details: {[key:string]: any} | null = null;
+
 	form: TFormFields = {
 		fields: {
 			name: {
+				value: "",
+				error: null,
+				rule: "required:min2"
+			},
+			uri: {
+				value: "",
+				error: null,
+				rule: "required:min2"
+			},
+			logo_uri: {
 				value: "",
 				error: null,
 				rule: "required:min2"
@@ -26,7 +38,7 @@ class EventEditStore {
             ticket_price_currency: {
                 value: "",
                 error: null,
-                rule: "required|min:8"
+                rule: "required|max:3"
             }
 		},
 		meta: {
@@ -35,6 +47,27 @@ class EventEditStore {
 		}
 	}
 
+	/* it's copypast from singleEventsStore because everything stores are independent between themselves */
+	async fetch() {
+		this.details = await this._dataProcessor.getEvent(
+			this.eventId
+		);
+		for (let key in this.form.fields) {
+			this.form.fields[key].value = this.details && this.details[key] ? this.details[key] : "";
+        }
+	}
+	getDetails() {
+		return this.details;
+	}
+	setCurrentEventId = (eventId: string) => {
+		if (this.eventId !== eventId) {
+			this.eventId = eventId;
+			this.details = null;
+			this.fetch();
+		}
+	};
+	/* end of copypast */
+
 	getField = (key: string) => {
         return this.form.fields && this.form.fields[key] ? this.form.fields[key].value : "";
 	}
@@ -42,22 +75,19 @@ class EventEditStore {
 	getError = (key: string) => {
         return this.form.fields && this.form.fields[key] ? this.form.fields[key].error : "";
 	}
-	
-	init = (eventId: string, eventData: TEventData) => {
+
+	init = (eventId: string) => {
 		if (!eventId || this.eventId === eventId) {
 			return;
 		}
-		this.eventId = eventId;
-		for (let key in this.form.fields) {
-			this.form.fields[key].value = eventData[key] ? eventData[key] : "";
-        }
+		this.setCurrentEventId(eventId);
 	}
 
 	onFieldChange = (event: any) => {
 		const { name, value } = event.target;
 		this.form.fields[name].value = value;
-		let values: {[key: string]: string} = {};
-		let rules: {[key: string]: string} = {};
+		const values: {[key: string]: string} = {};
+		const rules: {[key: string]: string} = {};
         for (let key in this.form.fields) {
 			values[key] = this.form.fields[key].value;
 			rules[key] = this.form.fields[key].rule;
@@ -70,14 +100,30 @@ class EventEditStore {
 		this.form.fields[name].error = validation.errors.first(name);
 	}
 
-	onSave = (e: Event) => {
+	onClickSave = async (e: Event) => {
 		e.preventDefault();
+		const values: {[key: string]: string} = {};
+		for (let key in this.form.fields) {
+			values[key] = this.form.fields[key].value;
+		}
+		await this._dataProcessor.updateEvent(this.eventId, values);
+		// this.fetch(); // to request actual data from server but in most of cases it doesn't hava sense
 	}
-	onCancel = (e: Event) => {
+	onClickCancel = (e: Event) => {
+		this.reset();
 		e.preventDefault();
 	}
 	onSubmit = (e: Event) => {
 		e.preventDefault();
+	}
+
+	reset = () => {
+		this.eventId = "";
+		for (let key in this.form.fields) {
+			this.form.fields[key].value = "";
+			this.form.fields[key].error = null;
+		}
+		this.details = null;
 	}
 
 	constructor(dataProcessor: DataProcessor) {
@@ -87,9 +133,14 @@ class EventEditStore {
 }
 
 decorate(EventEditStore, {
+	details: observable,
+	eventId: observable,
+	setCurrentEventId: action,
+	fetch: action,
+	reset: action,
 	init: action,
 	onFieldChange: action,
-	form: observable,
+	form: observable
 })
 
 export { EventEditStore };

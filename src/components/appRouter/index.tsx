@@ -20,7 +20,7 @@ export const AppRouter = () => {
 				render={() => <Redirect to={`${END_POINTS.EVENTS}1`} />}
 			/>
 			<Route exact path={`${END_POINTS.EVENTS}:page`} component={EventsList} />
-			<Route path="/eventEdit/:id" component={EventEdit} />
+			<Route path={`${END_POINTS.EVENT_EDIT}:id`} component={EventEdit} />
 			<Route exact path="/" render={() => <Redirect to={`${END_POINTS.EVENTS}1`} />} />
 			<Route exact path={END_POINTS.LOGIN} component={Login} />
 			<Route exact path={END_POINTS.LOGOUT} render={() => <Redirect to={`${END_POINTS.EVENTS}1`} />} />

@@ -1,5 +1,26 @@
 export type TProvider = 1;
 
+export type TEventData = {
+	[key: string]: string
+}
+
+export type TFormFields = {
+	fields: TFormField,
+	meta: {
+		isValid: boolean,
+		error: null | string | false
+	}
+}
+
+
+export type TFormField = {
+	[key: string] : {
+		value: string,
+		error: null | string | false,
+		rule: string
+	}
+}
+
 export type TAlertMessage = {
 	id: string,
 	type: string,

@@ -13,13 +13,15 @@ export class DataProcessor {
 	private doFetch = async (
 		endpointUrl: string,
 		method: TMethods = "GET",
-		body?: string
+		body?: string,
+		headers?: {[key: string]: string}
 	): Promise<any> => {
+		const token = this.getPersistedUserToken();
 		const requestParam: RequestInit = {
 			method,
-			headers: {
+			headers: Object.assign({
 				"Content-Type": "application/json;charset=utf-8"
-			}
+			}, token ? { "Authorization": `Token ${token}` } : {}, headers)
 		};
 		if (body) {
 			requestParam.body = body;
@@ -64,6 +66,14 @@ export class DataProcessor {
 	): Promise<any> => {
 		return await this.doFetch(endpoint, "POST", JSON.stringify(params));
 	}
+
+	private doPatch = async (
+		endpoint: string,
+		params: any
+	): Promise<any> => {
+		return await this.doFetch(endpoint, "PATCH", params);
+	}
+
 	constructor(loadingStore: LoadingStore, errorCallback = (e: any) => {console.log(e)}) {
 		this._loadingStore = loadingStore;
 		this._errorCallback = errorCallback;
@@ -77,7 +87,7 @@ export class DataProcessor {
 		]);
 		return result;
 	};
-	getOrganizers = async (page: number) => {
+	getOrganizers = async (page: number = -1) => {
 		const offset = page <= 1 ? 0 : (page - 1) * 10;
 		const result = await this.doGet("/organizers/", [
 			{ key: "limit", value: page > 0 ? PER_PAGE : -1 },
@@ -85,7 +95,7 @@ export class DataProcessor {
 		]);
 	};
 
-	getEvents = async (page: number = 0): Promise<any> => {
+	getEvents = async (page: number = -1): Promise<any> => {
 		const offset = page <= 1 ? 0 : (page - 1) * 10;
 		const result = await this.doGet("/events/", [
 			{ key: "limit", value: PER_PAGE },
@@ -97,7 +107,9 @@ export class DataProcessor {
 		return await this.doGet("/events/", [], id + "/");
 	};
 
-	updateEvent = async () => {};
+	updateEvent = async (id: string, data: {[key: string]: string}) => {
+		this.doPatch(`/events/${id}/`, JSON.stringify(data));
+	};
 
 	getPersistedUserToken = (): string | null => {
 		return STORAGE.getItem(PS_KEY);
