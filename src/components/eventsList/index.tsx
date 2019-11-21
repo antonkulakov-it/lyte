@@ -3,10 +3,10 @@ import { Link, NavLink } from "react-router-dom";
 import React from "react";
 import { EventsListStore } from "../../stores/eventsListStore";
 import { PER_PAGE } from "../../services/dataProcessor/config";
-import { Table, Pagination, /*, PageItem */ 
-Button} from "react-bootstrap";
+import { Table, Pagination, /*, PageItem */ Button} from "react-bootstrap";
 import { END_POINTS } from "../../endPoints";
 import { LoginStore } from "../../stores/loginStore";
+import { EditIcon } from "../common/editIcon";
 
 
 class EventsList extends React.Component {
@@ -36,15 +36,13 @@ class EventsList extends React.Component {
 		const events = this.eventsListStore.getEvents();
 		let pages: any[] = [];
 		const showEditButton = !!this.loginStore.getToken();
-		const editEventHead = showEditButton ? <th></th> : "";
+		const editEventHead = showEditButton ? <th></th> : null;
 		const eventsHtml = events.map((event) => {
 			const editEventBody = showEditButton ? <td><Button variant="outline-primary">
 				<Link to={`${END_POINTS.EVENT_EDIT}${event.id}`}>
-					<svg id="i-edit" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
-						<path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z" />
-					</svg>
+					<EditIcon />
 				</Link>
-				</Button></td>: "";
+				</Button></td>: null;
 			return(
 				<tr key={ event.id }>
 					<td>{ event.id }</td>

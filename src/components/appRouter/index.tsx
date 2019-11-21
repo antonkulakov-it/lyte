@@ -8,28 +8,53 @@ import { END_POINTS } from "../../endPoints";
 export const AppRouter = () => {
 	return(
 		<Switch>
-			<Route path={`${END_POINTS.EVENT_DETAILS}:id`} component={SingleEventDetails} />
 			<Route
-				exact
-				path={END_POINTS.EVENTS_NOSLASH}
-				render={() => <Redirect to={`${END_POINTS.EVENTS}1`} />}
+				path={`${END_POINTS.EVENT_DETAILS}:id`}
+				component={SingleEventDetails}
 			/>
 			<Route
 				exact
 				path={END_POINTS.EVENTS}
 				render={() => <Redirect to={`${END_POINTS.EVENTS}1`} />}
 			/>
-			<Route exact path={`${END_POINTS.EVENTS}:page`} component={EventsList} />
-			<Route path={`${END_POINTS.EVENT_EDIT}:id`} component={EventEdit} />
-			<Route exact path="/" render={() => <Redirect to={`${END_POINTS.EVENTS}1`} />} />
-			<Route exact path={END_POINTS.LOGIN} component={Login} />
-			<Route exact path={END_POINTS.LOGOUT} render={() => <Redirect to={`${END_POINTS.EVENTS}1`} />} />
+			<Route
+				exact
+				path={`${END_POINTS.EVENTS}:page`}
+				component={EventsList}
+			/>
+			<Route
+				path={`${END_POINTS.EVENT_EDIT}:id`}
+				// component={EventEdit}
+				render={(params) => {
+					return(
+						<EventEdit
+							{...params}
+							whenLoggedOut={
+								<Redirect to={`${END_POINTS.EVENT_DETAILS}${params.match.params.id}`} />
+							}
+						/>
+					)
+				}}
+			/>
+			<Route
+				exact
+				path="/"
+				render={() => <Redirect to={`${END_POINTS.EVENTS}1`} />}
+			/>
+			<Route
+				exact
+				path={END_POINTS.LOGIN}
+				component={Login}
+			/>
+			<Route
+				exact
+				path={END_POINTS.LOGOUT}
+				render={() => <Redirect to={`${END_POINTS.EVENTS}1`} />}
+			/>
 			<Route
 				path="*"
 				atch
-				render={() => {
-					return "UrlNotFoundError";
-				}}
+				render={() => {return "UrlNotFoundError";}}
 			/>
 		</Switch>
 	);

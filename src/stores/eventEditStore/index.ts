@@ -107,7 +107,7 @@ class EventEditStore {
 			values[key] = this.form.fields[key].value;
 		}
 		await this._dataProcessor.updateEvent(this.eventId, values);
-		// this.fetch(); // to request actual data from server but in most of cases it doesn't hava sense
+		this.fetch(); // to request actual data from server but in case of parallel update by some users
 	}
 	onClickCancel = (e: Event) => {
 		this.reset();

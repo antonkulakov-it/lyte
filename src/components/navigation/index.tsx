@@ -27,6 +27,16 @@ export const Navigation = inject("loginStore")(observer(({ loginStore }) => {
 					Events
 				</Nav.Link>
 			</Nav.Item>
+			<Nav.Item>
+				<Nav.Link as={NavLink} to={END_POINTS.CATEGORIES} activeClassName="active">
+					Categories
+				</Nav.Link>
+			</Nav.Item>
+			<Nav.Item>
+				<Nav.Link as={NavLink} to={END_POINTS.ORGANIZERS} activeClassName="active">
+					Organizers
+				</Nav.Link>
+			</Nav.Item>
 			{loginItem}
 		</Nav>
 	);
