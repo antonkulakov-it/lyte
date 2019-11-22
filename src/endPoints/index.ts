@@ -3,9 +3,9 @@ export const END_POINTS = {
 	EVENT_DETAILS: "/event/",
 	EVENT_EDIT: "/event-edit/",
 	ORGANIZERS: "/organizers/",
-	ORGANIZER_EDIT: "organizer-edit",
+	ORGANIZER_EDIT: "/organizer-edit/",
 	CATEGORIES: "/categories/",
-	CATEGORE_EDIT: "/category-edit/",
+	CATEGORY_EDIT: "/category-edit/",
 	LOGIN: "/login/",
 	LOGOUT: "/logout/"
 }

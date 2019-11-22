@@ -50,7 +50,7 @@ const getInputGroup = (props: any) => {
 
 
 const EventEdit = inject("eventEditStore", "loginStore")(observer(({ eventEditStore, loginStore, match, history, whenLoggedOut }) => {
-	// we don't need to access logget out user
+	// we don't need to access logged out user
 	if (!loginStore.getToken()) {
 		return whenLoggedOut;
 	}

@@ -79,7 +79,7 @@ export class DataProcessor {
 		this._errorCallback = errorCallback;
 	}
 
-	getCategories = async (page: number) => {
+	getCategories = async (page: number = -1) => {
 		const offset = page <= 1 ? 0 : (page - 1) * 10;
 		const result = await this.doGet("/categories/", [
 			{ key: "limit", value: page > 0 ? PER_PAGE : -1 },
@@ -93,6 +93,7 @@ export class DataProcessor {
 			{ key: "limit", value: page > 0 ? PER_PAGE : -1 },
 			{ key: "offset", value: offset }
 		]);
+		return result;
 	};
 
 	getEvents = async (page: number = -1): Promise<any> => {

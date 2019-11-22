@@ -1,5 +1,16 @@
 export type TProvider = 1;
 
+export type TListType = "categories" | "organizers" | "events";
+
+export type TListCases = {
+	[key: string] : {
+		getItemsMethod: string,
+		endPoint: string,
+		ItemsHead: (props: any) => JSX.Element
+		ItemsBody: (props: any) => JSX.Element,
+	}
+}
+
 export type TEventData = {
 	[key: string]: string
 }
