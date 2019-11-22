@@ -21,7 +21,7 @@ export type TFormFields = {
 		isValid: boolean,
 		error: null | string | false
 	}
-}
+} | {};
 
 
 export type TFormField = {

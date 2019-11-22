@@ -140,7 +140,7 @@ const listCases: TListCases = {
 	}
 };
 
-export const ListBuilder = inject("loginStore", "listStore")(observer(({ loginStore, listStore, location, history, type }) => {
+export const ListBuilder = (type: string) => inject("loginStore", "listStore")(observer(({ loginStore, listStore, location, history }) => {
 	const { getItemsMethod, endPoint, ItemsHead, ItemsBody } = listCases[type];
 	listStore.init(
 		Number(location.pathname.split(endPoint)[1] || 1),

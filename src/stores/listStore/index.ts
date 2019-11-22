@@ -2,6 +2,8 @@ import { observable, computed, action, decorate } from "mobx";
 import { DataProcessor } from "../../services/dataProcessor";
 import { PER_PAGE } from "../../services/dataProcessor/config";
 
+// it's enought one instance at this time
+// when we will show more than one lists on the page, we should create new instance for everyone list
 class ListStore {
 	currentPage: number = 0;
 	count: number = 0;
