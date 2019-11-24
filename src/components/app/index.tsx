@@ -4,7 +4,7 @@ import { Provider } from "mobx-react";
 import { AppRouter } from "../appRouter";
 import { Navigation } from "../navigation";
 import { Alerts } from "../common/alerts";
-import { Loading } from "../common/loading";
+import { Loading } from "../common/loading/index";
 import { LoadingStore } from "../../stores/loadingStore";
 import { AlertsStore } from "../../stores/alertsStore";
 import { DataProcessor } from "../../services/dataProcessor";

@@ -1,4 +1,4 @@
-import { observable, computed, action, decorate } from "mobx";
+import { observable, action, decorate } from "mobx";
 import { TAlertMessage, TAlertMessages } from "../../types";
 const TIMEOUT = 10000;
 

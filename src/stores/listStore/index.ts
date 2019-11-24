@@ -34,20 +34,18 @@ class ListStore {
 	getCount() {
 		return this.count;
 	}
-	setCurrentPage = (pageNum: number, endPoint: string) => {
-		if (this.currentPage !== pageNum || this.endPoint !== endPoint) {
+	setCurrentPage = async (pageNum: number, endPoint: string) => {
+		if (this.currentPage !== pageNum || this.endPoint !== endPoint || this._dataProcessor.shouldRefresh()) {
 			this.currentPage = pageNum;
 			this.endPoint = endPoint;
 			this.reset();
-			this.fetch();
+			await this.fetch();
 		}
 	}
-
 	reset() {
 		this.items = [];
 		this.count = 0;
 	}
-
 	init(page: number, endPoint: string, replace: (target: string) => void, getItemsMethodName: string) {
 		let result = page;
 		this._getItemsMethodName = getItemsMethodName;

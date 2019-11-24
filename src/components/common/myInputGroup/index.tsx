@@ -15,11 +15,11 @@ export const MyInputGroup = (props: any) => {
 			return(
 				<FormControl
 					type={type}
-					value={value}
 					placeholder={placeholder}
 					aria-label={placeholder}
 					aria-describedby={id}
 					name={name}
+					defaultValue={value}
 				/>
 			);
 		},
@@ -27,11 +27,11 @@ export const MyInputGroup = (props: any) => {
 			return(
 				<FormControl
 					type={type}
-					value={value}
 					placeholder={placeholder}
 					aria-label={placeholder}
 					aria-describedby={id}
 					name={name}
+					defaultValue={value}
 				/>
 			);
 		}

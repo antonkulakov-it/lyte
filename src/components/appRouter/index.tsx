@@ -2,11 +2,13 @@ import * as React from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
 import { EventsList } from "../eventsList";
 import SingleEventDetails from "../singleEventDetails";
-import EventEdit from "../singleEventDetails/eventEdit";
+import { EventEdit } from "../singleEventDetails/eventEdit";
 import Login from "../login";
 import { END_POINTS } from "../../endPoints";
 import { CategoriesList } from "../categoriesList";
 import { OrganizersList } from "../organizersList";
+import { CategoryEdit } from "../categoryEdit";
+import { OrganizerEdit } from "../organizerEdit";
 export const AppRouter = () => {
 	return(
 		<Switch>
@@ -25,6 +27,28 @@ export const AppRouter = () => {
 				path={`${END_POINTS.EVENTS}:page`}
 				component={EventsList}
 			/>
+			<Route
+				exact
+				path={`${END_POINTS.EVENT_EDIT}:id`}
+				render={(props) => {
+					const action = () => { 
+						if (props.history.length > 0) {
+							props.history.goBack();
+						}
+						else {
+							props.history.replace(`${END_POINTS.EVENT_DETAILS}${props.match.params.id}`);
+						}
+					}
+					return(
+						<EventEdit
+							whenLoggedOut={<Redirect to={`${END_POINTS.EVENT_DETAILS}${props.match.params.id}`} />}
+							onOk={action}
+							onCancel={action}
+							{...props}
+						/>
+					)
+				}}
+			/>
 
 			<Route
 				exact
@@ -35,6 +59,27 @@ export const AppRouter = () => {
 				exact
 				path={`${END_POINTS.CATEGORIES}:page`}
 				component={CategoriesList}
+			/>
+			<Route
+				exact
+				path={`${END_POINTS.CATEGORY_EDIT}:id`}
+				render={(props) => {
+					const action = () => {
+						if (props.history.length > 0) {
+							props.history.goBack();
+						} else {
+							props.history.replace(`${END_POINTS.CATEGORIES}1`);
+						}
+					}
+					return(
+						<CategoryEdit
+							whenLoggedOut={<Redirect to={`${END_POINTS.CATEGORIES}1`} />}
+							onOk={action}
+							onCancel={action}
+							{...props}
+						/>
+					)
+				}}
 			/>
 
 			<Route
@@ -47,17 +92,23 @@ export const AppRouter = () => {
 				path={`${END_POINTS.ORGANIZERS}:page`}
 				component={OrganizersList}
 			/>
-
 			<Route
 				exact
-				path={`${END_POINTS.EVENT_EDIT}:id`}
-				render={(params) => {
+				path={`${END_POINTS.ORGANIZER_EDIT}:id`}
+				render={(props) => {
+					const action = () => {
+						if (props.history.length > 0) {
+							props.history.goBack();
+						} else {
+							props.history.replace(`${END_POINTS.ORGANIZERS}1`);
+						}
+					}
 					return(
-						<EventEdit
-							{...params}
-							whenLoggedOut={
-								<Redirect to={`${END_POINTS.EVENT_DETAILS}${params.match.params.id}`} />
-							}
+						<OrganizerEdit
+							whenLoggedOut={<Redirect to={`${END_POINTS.ORGANIZERS}1`} />}
+							onOk={action}
+							onCancel={action}
+							{...props}
 						/>
 					)
 				}}
@@ -80,7 +131,7 @@ export const AppRouter = () => {
 			<Route
 				path="*"
 				atch
-				render={() => {return "UrlNotFoundError";}}
+				render={() => { return "UrlNotFoundError"; }}
 			/>
 		</Switch>
 	);

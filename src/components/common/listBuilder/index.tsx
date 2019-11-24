@@ -1,11 +1,9 @@
 import React from "react";
 import { observer, inject } from "mobx-react";
 import { Link } from "react-router-dom";
-import { ListStore } from "../../../stores/listStore";
 import { PER_PAGE } from "../../../services/dataProcessor/config";
 import { Table, Pagination, /*, PageItem */ Button} from "react-bootstrap";
 import { END_POINTS } from "../../../endPoints";
-import { LoginStore } from "../../../stores/loginStore";
 import { EditIcon } from "../editIcon";
 import { MyPageItem } from "../myPageItem";
 import { TListCases } from "../../../types";
@@ -84,7 +82,7 @@ const listCases: TListCases = {
 			);
 		},
 		ItemsBody: (props: any): JSX.Element => {
-			const { items, showEditButton, endPointEdit } =  props;
+			const { items, showEditButton } =  props;
 			return(
 				<tbody>
 					{
@@ -119,7 +117,7 @@ const listCases: TListCases = {
 			);
 		},
 		ItemsBody: (props: any): JSX.Element => {
-			const { items, showEditButton, endPointEdit } =  props;
+			const { items, showEditButton } =  props;
 			return(
 				<tbody>
 					{

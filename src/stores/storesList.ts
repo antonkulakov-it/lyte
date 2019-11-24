@@ -1,11 +1,11 @@
 import { ListStore } from "./listStore";
-import { EventEditStore } from "./eventEditStore";
+import { FormStore } from "./formStore";
 import { SingleEventStore } from "./singleEventStore";
 import { LoginStore } from "./loginStore";
 
 const storesList = [
 	{ name: "listStore", class: ListStore },
-	{ name: "eventEditStore", class: EventEditStore },
+	{ name: "formStore", class: FormStore },
 	{ name: "singleEventStore", class: SingleEventStore },
 	{ name: "loginStore", class: LoginStore }
 ];

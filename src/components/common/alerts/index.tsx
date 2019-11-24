@@ -1,7 +1,7 @@
 import * as React from "react";
 import { observer, inject } from "mobx-react";
 import { Alert } from "react-bootstrap";
-import { TAlertMessage, TAlertMessages, TAlertsVariants } from "../../../types";
+import { TAlertMessages, TAlertsVariants } from "../../../types";
 
 const getAlertsHtml = (alerts: TAlertMessages) => {
 	const cases: TAlertsVariants = {

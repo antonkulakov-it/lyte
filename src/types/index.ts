@@ -6,13 +6,27 @@ export type TListCases = {
 	[key: string] : {
 		getItemsMethod: string,
 		endPoint: string,
-		ItemsHead: (props: any) => JSX.Element
-		ItemsBody: (props: any) => JSX.Element,
+		ItemsHead: (props: any) => JSX.Element,
+		ItemsBody: (props: any) => JSX.Element
 	}
 }
 
 export type TEventData = {
 	[key: string]: string
+}
+
+export type TFormActions = {
+	fetchMethod: string,
+	updateMethod: string,
+	getForm?: () => JSX.Element
+};
+
+export type TFormField = {
+	[key: string]: {
+		value: string,
+		error: null | string | false,
+		rule: string
+	}
 }
 
 export type TFormFields = {
@@ -21,16 +35,7 @@ export type TFormFields = {
 		isValid: boolean,
 		error: null | string | false
 	}
-} | {};
-
-
-export type TFormField = {
-	[key: string] : {
-		value: string,
-		error: null | string | false,
-		rule: string
-	}
-}
+};
 
 export type TAlertMessage = {
 	id: string,

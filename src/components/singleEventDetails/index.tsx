@@ -19,7 +19,7 @@ const Organizer = (props: { logo_uri: string; name: string; alt: string }) => {
 	return name && name !== "" ? (
 	  <div>
 		<h2>Organizer: {name}</h2>
-		<Logo className="organizer-logo" src={logo_uri} alt={name}></Logo>
+		<Logo className="organizer-logo" src={logo_uri} alt={alt}></Logo>
 	  </div>
 	) : (
 	  (("" as unknown) as JSX.Element)

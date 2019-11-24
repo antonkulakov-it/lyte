@@ -1,7 +1,7 @@
 import { API_URL, PER_PAGE } from "./config";
 import { TMethods, TRequestParams, TKeyValue } from "../../types";
 import { LoadingStore } from "../../stores/loadingStore";
-import { END_POINTS } from "../../apiEndPoints";
+import { END_POINTS } from "./endPoints";
 
 const PERSIST_STORAGE_PREFIX = "my-app-";
 const PS_KEY = PERSIST_STORAGE_PREFIX + "token";
@@ -10,6 +10,7 @@ const STORAGE = sessionStorage;
 export class DataProcessor {
 	private _loadingStore: LoadingStore;
 	private _errorCallback: (e: any) => void;
+	private _shouldRefresh: boolean = false;
 	private doFetch = async (
 		endpointUrl: string,
 		method: TMethods = "GET",
@@ -57,6 +58,7 @@ export class DataProcessor {
 				result + `${result === "" ? "?" : "&"}${current.key}=${current.value}`
 			);
 		}, "");
+		this._shouldRefresh = false;
 		return await this.doFetch(`${endpoint}${inlineParams}` + paramString);
 	};
 
@@ -64,6 +66,7 @@ export class DataProcessor {
 		endpoint: string,
 		params: any
 	): Promise<any> => {
+		this._shouldRefresh = true;
 		return await this.doFetch(endpoint, "POST", JSON.stringify(params));
 	}
 
@@ -71,6 +74,7 @@ export class DataProcessor {
 		endpoint: string,
 		params: any
 	): Promise<any> => {
+		this._shouldRefresh = true;
 		return await this.doFetch(endpoint, "PATCH", params);
 	}
 
@@ -81,35 +85,53 @@ export class DataProcessor {
 
 	getCategories = async (page: number = -1) => {
 		const offset = page <= 1 ? 0 : (page - 1) * 10;
-		const result = await this.doGet("/categories/", [
-			{ key: "limit", value: page > 0 ? PER_PAGE : -1 },
-			{ key: "offset", value: offset }
-		]);
-		return result;
-	};
-	getOrganizers = async (page: number = -1) => {
-		const offset = page <= 1 ? 0 : (page - 1) * 10;
-		const result = await this.doGet("/organizers/", [
+		const result = await this.doGet(END_POINTS.CATEGORIES, [
 			{ key: "limit", value: page > 0 ? PER_PAGE : -1 },
 			{ key: "offset", value: offset }
 		]);
 		return result;
 	};
 
+	getCategory = async (id: string) => {
+		return await this.doGet(END_POINTS.CATEGORIES, [], id + "/");
+	};
+
+	updateCategory = async (id: string, data: {[key: string]: string}) => {
+		this.doPatch(`${END_POINTS.CATEGORIES}${id}/`, JSON.stringify(data));
+	};
+
+	getOrganizers = async (page: number = -1) => {
+		const offset = page <= 1 ? 0 : (page - 1) * 10;
+		const result = await this.doGet(END_POINTS.ORGANIZERS, [
+			{ key: "limit", value: page > 0 ? PER_PAGE : -1 },
+			{ key: "offset", value: offset }
+		]);
+		return result;
+	};
+
+	getOrganizer = async (id: string) => {
+		return await this.doGet(END_POINTS.ORGANIZERS, [], id + "/");
+	};
+
+	updateOrganizer = async (id: string, data: {[key: string]: string}) => {
+		this.doPatch(`${END_POINTS.ORGANIZERS}${id}/`, JSON.stringify(data));
+	};
+
 	getEvents = async (page: number = -1): Promise<any> => {
 		const offset = page <= 1 ? 0 : (page - 1) * 10;
-		const result = await this.doGet("/events/", [
+		const result = await this.doGet(END_POINTS.EVENTS, [
 			{ key: "limit", value: PER_PAGE },
 			{ key: "offset", value: offset }
 		]);
 		return result;
 	};
+
 	getEvent = async (id: string) => {
-		return await this.doGet("/events/", [], id + "/");
+		return await this.doGet(END_POINTS.EVENTS, [], id + "/");
 	};
 
 	updateEvent = async (id: string, data: {[key: string]: string}) => {
-		this.doPatch(`/events/${id}/`, JSON.stringify(data));
+		this.doPatch(`${END_POINTS.EVENTS}/${id}/`, JSON.stringify(data));
 	};
 
 	getPersistedUserToken = (): string | null => {
@@ -139,4 +161,6 @@ export class DataProcessor {
 		});
 		return result;
 	};
+	// it used to data when we know about changes
+	shouldRefresh = () => this._shouldRefresh;
 }

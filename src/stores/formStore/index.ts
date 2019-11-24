@@ -1,97 +1,106 @@
 import { observable, action, decorate } from "mobx";
 import Validator from "validatorjs";
 import { DataProcessor } from "../../services/dataProcessor";
+import { TFormActions } from "../../types";
 import { TFormFields } from "../../types";
 
 class FormStore {
     private _dataProcessor: {[key: string]: any};
 	itemId: string = "";
 	data: {[key:string]: any} | null = null;
-	fetchMethod: any = () => {};
-	saveMethod: any = () => {};
 	entity: string = "";
 
-	form: TFormFields = {
-		fields: {},
-		meta: {}
+	actions: TFormActions = {
+		fetchMethod: "",
+		updateMethod: ""
 	};
+	form?: TFormFields;
+	onOk: () => void = () => {};
+	onCancel: () => void = () => {};
 
 	async fetch() {
-		this.data = await this._dataProcessor[this.fetchMethod](
+		const { fetchMethod } = this.actions!;
+		this.data = await this._dataProcessor[fetchMethod](
 			this.itemId
 		);
-		for (let key in this.form.fields) {
-			this.form.fields[key].value = this.data && this.data[key] ? this.data[key] : "";
+		for (let key in this.form!.fields) {
+			this.form!.fields[key].value = this.data && this.data[key] ? this.data[key] : "";
         }
 	}
 	getData() {
 		return this.data;
 	}
-	setCurrentEntity = (itemId: string, entity: string, formFields: TFormFields) => {
+	setCurrentEntity = async (itemId: string) => {
 		if (this.itemId !== itemId) {
 			this.itemId = itemId;
 			this.data = null;
-			this.form = formFields;
-			this.fetch();
+			await this.fetch();
 		}
 	};
 
 	getField = (key: string) => {
-        return this.form.fields && this.form.fields[key] ? this.form.fields[key].value : "";
+        return this.form!.fields && this.form!.fields[key] ? this.form!.fields[key].value : "";
 	}
 
 	getError = (key: string) => {
-        return this.form.fields && this.form.fields[key] ? this.form.fields[key].error : "";
+        return this.form!.fields && this.form!.fields[key] ? this.form!.fields[key].error : "";
 	}
 
-	init = (itemId: string, entity: string, formFields: TFormFields) => {
+	init = (itemId: string, entity: string, formFields: TFormFields, formActions: TFormActions, onOk: () => void, onCancel: () => void ) => {
 		if (!itemId || (this.itemId === itemId && this.entity === entity)) {
 			return;
 		}
-		this.setCurrentEntity(itemId, entity, formFields);
+		this.entity = entity;
+		this.form = formFields;
+		this.actions = formActions;
+		this.onOk = onOk;
+		this.onCancel = onCancel;
+		this.setCurrentEntity(itemId);
 	}
 
 	onFieldChange = (event: any) => {
 		const { name, value } = event.target;
-		this.form.fields[name].value = value;
+		this.form!.fields[name].value = value;
 		const values: {[key: string]: string} = {};
 		const rules: {[key: string]: string} = {};
-        for (let key in this.form.fields) {
-			values[key] = this.form.fields[key].value;
-			rules[key] = this.form.fields[key].rule;
+        for (let key in this.form!.fields) {
+			values[key] = this.form!.fields[key].value;
+			rules[key] = this.form!.fields[key].rule;
         }
 		const validation = new Validator(
 			values,
 			rules,
 		);
-		this.form.meta.isValid = !!validation.passes();
-		this.form.fields[name].error = validation.errors.first(name);
+		this.form!.meta.isValid = !!validation.passes();
+		this.form!.fields[name].error = validation.errors.first(name);
 	}
 
-	onClickSave = async (e: Event) => {
+	onClickSave = async (e: any) => {
 		e.preventDefault();
+		const { updateMethod } = this.actions;
 		const values: {[key: string]: string} = {};
-		for (let key in this.form.fields) {
-			values[key] = this.form.fields[key].value;
+		for (let key in this.form!.fields) {
+			values[key] = this.form!.fields[key].value;
 		}
-		await this._dataProcessor[this.saveMethod](this.itemId, values);
-		this.fetch(); // to request actual data from server but in case of parallel update by some users
+		await this._dataProcessor[updateMethod](this.itemId, values);
+		this.onOk();
 	}
-	onClickCancel = (e: Event) => {
-		this.reset();
+	onClickCancel = (e: any) => {
 		e.preventDefault();
+		this.reset();
+		this.onCancel();
 	}
-	onSubmit = (e: Event) => {
+	onSubmit = (e: any) => {
 		e.preventDefault();
 	}
 
 	reset = () => {
-		this.eventId = "";
-		for (let key in this.form.fields) {
-			this.form.fields[key].value = "";
-			this.form.fields[key].error = null;
+		this.itemId = "";
+		for (let key in this.form!.fields) {
+			this.form!.fields[key].value = "";
+			this.form!.fields[key].error = null;
 		}
-		this.details = null;
+		this.data = null;
 	}
 
 	constructor(dataProcessor: DataProcessor) {
