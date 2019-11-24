@@ -7,6 +7,12 @@ const PERSIST_STORAGE_PREFIX = "my-app-";
 const PS_KEY = PERSIST_STORAGE_PREFIX + "token";
 const STORAGE = sessionStorage;
 
+const getErrorString = (fetchResult: any): string => {
+	return Object.keys(fetchResult).reduce((result, current: string) => {
+		return result + current + ": " + fetchResult[current].join("<br />");
+	}, "");
+}
+
 export class DataProcessor {
 	private _loadingStore: LoadingStore;
 	private _errorCallback: (e: any) => void;
@@ -34,7 +40,10 @@ export class DataProcessor {
 					requestParam
 				);
 				if (!fetchResult.ok) {
-					throw new Error(fetchResult.statusText);
+					const error = new Error();
+					error.name = fetchResult.statusText;
+					error.message = getErrorString(await fetchResult.json());
+					throw error;
 				}
 				const result = await fetchResult.json();
 				return resolve(result);
@@ -131,7 +140,7 @@ export class DataProcessor {
 	};
 
 	updateEvent = async (id: string, data: {[key: string]: string}) => {
-		this.doPatch(`${END_POINTS.EVENTS}/${id}/`, JSON.stringify(data));
+		this.doPatch(`${END_POINTS.EVENTS}${id}/`, JSON.stringify(data));
 	};
 
 	getPersistedUserToken = (): string | null => {
@@ -147,7 +156,7 @@ export class DataProcessor {
 	}
 
 	getUserToken = async (email: string, password: string): Promise<any> => {
-		const result = await this.doPost("/users/token/", {
+		const result = await this.doPost(END_POINTS.LOGIN, {
 			username: email,
 			password: password
 		});
@@ -155,7 +164,7 @@ export class DataProcessor {
 	};
 
 	registerUser = async (email: string, password: string): Promise<any> => {
-		const result = await this.doPost("/users/register/", {
+		const result = await this.doPost(END_POINTS.REG, {
 			username: email,
 			password: password
 		});

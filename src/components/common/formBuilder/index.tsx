@@ -37,7 +37,7 @@ const formFields: { [key: string]: TFormFields } = {
 			ticket_price_currency: {
 				value: "",
 				error: null,
-				rule: "required|max:3"
+				rule: "required|max:33"
 			}
 		},
 		meta: {
